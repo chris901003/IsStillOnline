@@ -13,83 +13,106 @@ import fs from 'fs'
 import nodemailer from 'nodemailer'
 import schedule from 'node-schedule'
 
-async function checkStatus(url) {
-    try {
-        const response = await axios.get(url)
-        return response.status
-    } catch (error) {
-        throw new Error(`Unable to connect to server: ${error.message}`)
+class Utility { 
+    static loadTargetUrls() {
+        const urls = fs.readFileSync('target-urls.txt', 'utf8').split('\n').map(url => url.trim()).filter(url => url.length > 0)
+        return urls
+    }
+
+    static loadSensitiveData() {
+        const data = fs.readFileSync('sensitive.json', 'utf8')
+        return JSON.parse(data)
     }
 }
 
-function loadTargetUrls() {
-    const urls = fs.readFileSync('target-urls.txt', 'utf8').split('\n').map(url => url.trim()).filter(url => url.length > 0)
-    return urls
-}
-
-async function checkUrls(urls) {
-    let reports = []
-    for (const url of urls) {
+class UrlChecker {
+    async #checkStatus(url) {
         try {
-            const status = await checkStatus(url)
-            reports.push(`[Success] - ${url} - ${status}`)
+            const response = await axios.get(url)
+            return response.status
         } catch (error) {
-            reports.push(`[Failed] - ${url} - ${error.message}`)
+            throw new Error(`Unable to connect to server: ${error.message}`)
         }
     }
-    return reports
-}
 
-function genMailInfo(reports) {
-    const currentTime = new Date().toLocaleString()
-    const reportInfo = reports.join('\n')
-    return currentTime + "\n" + reportInfo + "\n" + currentTime
-}
-
-async function sendEmail(mailInfo) {
-    const transporter = nodemailer.createTransport({
-        'host': 'smtp.gmail.com',
-        'port': 587,
-        'secure': false,
-        'auth': {
-            'user': sensitiveData.emailAddress,
-            'pass': sensitiveData.emailAppPassword
+    async checkUrls(urls) {
+        let reports = []
+        for (const url of urls) {
+            try {
+                const status = await this.#checkStatus(url)
+                reports.push(`[Success] - ${url} - ${status}`)
+            } catch (error) {
+                reports.push(`[Failed] - ${url} - ${error.message}`)
+            }
         }
-    })
+        return reports
+    }
+}
 
-    const mailOptions = {
-        'from': {
-            name: "Service",
-            address: sensitiveData.delegateEmail
-        },
-        'to': sensitiveData.targetEmailAddress,
-        'subject': 'URL Monitor Report',
-        'text': mailInfo
+class MailManager {
+    constructor() {
+        this.sensitiveData = Utility.loadSensitiveData()
     }
 
-    transporter.sendMail(mailOptions, (error, info) => {
-        if (error) {
-            console.error(`Unable to send email: ${error.message}`)
-        } else {
-            console.log(`Email sent: ${info.response}`)
+    #genMailInfo(reports) {
+        const currentTime = new Date().toLocaleString()
+        const reportInfo = reports.join('\n')
+        return currentTime + "\n" + reportInfo + "\n" + currentTime
+    }
+
+    async #sendEmail(mailInfo) {
+        const transporter = nodemailer.createTransport({
+            'host': 'smtp.gmail.com',
+            'port': 587,
+            'secure': false,
+            'auth': {
+                'user': this.sensitiveData.emailAddress,
+                'pass': this.sensitiveData.emailAppPassword
+            }
+        })
+    
+        const mailOptions = {
+            'from': {
+                name: "Service",
+                address: this.sensitiveData.delegateEmail
+            },
+            'to': this.sensitiveData.targetEmailAddress,
+            'subject': 'URL Monitor Report',
+            'text': mailInfo
         }
-    })
+    
+        transporter.sendMail(mailOptions, (error, info) => {
+            if (error) {
+                console.error(`Unable to send email: ${error.message}`)
+            } else {
+                console.log(`Email sent: ${info.response}`)
+            }
+        })
+    }
+
+    async sendReport(reports) {
+        const mailInfo = this.#genMailInfo(reports)
+        this.#sendEmail(mailInfo)
+    }
 }
 
-async function main() {
-    const targetUrls = loadTargetUrls()
-    console.log(targetUrls)
-    const checkReports = await checkUrls(targetUrls)
-    const mailInfo = genMailInfo(checkReports)
-    sendEmail(mailInfo)
+class Monitor {
+    constructor() {
+        this.urlChecker = new UrlChecker()
+        this.mailManager = new MailManager()
+    }
+
+    async monitor() {
+        const targetUrls = Utility.loadTargetUrls()
+        console.log(targetUrls)
+        const checkReports = await this.urlChecker.checkUrls(targetUrls)
+        this.mailManager.sendReport(checkReports)
+    }
+
+    start() {
+        schedule.scheduleJob('*/30 * * * *', this.monitor)
+    }
 }
 
-function loadSensitiveData() {
-    const data = fs.readFileSync('sensitive.json', 'utf8')
-    return JSON.parse(data)
-}
-
-const sensitiveData = loadSensitiveData()
-main()
-
-const halfHourlyJob = schedule.scheduleJob('*/30 * * * *', main)
+const monitor = new Monitor()
+monitor.start()
