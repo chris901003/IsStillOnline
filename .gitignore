@@ -1,3 +1,5 @@
 node_modules
 target-urls.txt
 sensitive.json
+mongodb
+.env

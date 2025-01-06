@@ -1,0 +1,22 @@
+services:
+  mongoDB:
+    image: mongo:6.0.4
+    container_name: mongoDB
+    ports:
+      - "27017:27017"
+    volumes:
+      - IsStillOnlineVolume:/data/db
+      - ./mongoDB/initdb.d/:/docker-entrypoint-initdb.d/
+    command: --auth
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGODB_ADMIN_USER}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGODB_ADMIN_PASS}
+      MONGO_INITDB_DATABASE: IsStillOnlineDB
+  
+volumes:
+  IsStillOnlineVolume:
+    driver: local
+    driver_opts:
+      type: none
+      device: ${MONGODB_VOLUME_PATH}
+      o: bind
