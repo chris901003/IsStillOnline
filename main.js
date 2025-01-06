@@ -110,7 +110,8 @@ class Monitor {
     }
 
     start() {
-        schedule.scheduleJob('*/30 * * * *', this.monitor)
+        this.monitor()
+        schedule.scheduleJob('*/30 * * * *', () => this.monitor())
     }
 }
 
