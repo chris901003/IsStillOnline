@@ -13,6 +13,21 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: ${MONGODB_ADMIN_PASS}
       MONGO_INITDB_DATABASE: IsStillOnlineDB
   
+  mongo-express:
+    image: mongo-express
+    container_name: mongo-express
+    ports:
+      - "8081:8081"
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: ${MONGODB_ADMIN_USER}
+      ME_CONFIG_MONGODB_ADMINPASSWORD: ${MONGODB_ADMIN_PASS}
+      ME_CONFIG_BASICAUTH_USERNAME: ${MONGO_EXPRESS_WEB_USER}
+      ME_CONFIG_BASICAUTH_PASSWORD: ${MONGO_EXPRESS_WEB_PASS}
+      ME_CONFIG_MONGODB_SERVER: mongoDB
+      ME_CONFIG_MONGODB_URL: mongodb://${MONGODB_ADMIN_USER}:${MONGODB_ADMIN_PASS}@mongoDB:27017?authSource=admin
+    depends_on:
+      - mongoDB
+  
 volumes:
   IsStillOnlineVolume:
     driver: local
