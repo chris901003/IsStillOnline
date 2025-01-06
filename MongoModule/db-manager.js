@@ -1,11 +1,13 @@
 import mongoose from 'mongoose'
 
 import { DBUserInfo } from './db-userinfo.js'
+import { DBMonitorUrl } from './db-monitor-url.js'
 
 class MongoDBManager {
     constructor(dbUrl) {
         this.dbUrl = dbUrl
         this.userInfoManager = new DBUserInfo()
+        this.monitorUrlManager = new DBMonitorUrl()
     }
 
     async startConnection() {
@@ -37,6 +39,22 @@ class MongoDBManager {
     async deleteUserInfo(email) {
         try {
             await this.userInfoManager.deleteUserInfo(email)
+        } catch (error) {
+            console.error(`${error.message}`)
+        }
+    }
+
+    async createMonitorUrl(owner, url) {
+        try {
+            await this.monitorUrlManager.createMonitorUrl(owner, url)
+        } catch (error) {
+            console.error(`${error.message}`)
+        }
+    }
+
+    async deleteMonitorUrl(owner, url) {
+        try {
+            await this.monitorUrlManager.deleteMonitorUrl(owner, url)
         } catch (error) {
             console.error(`${error.message}`)
         }

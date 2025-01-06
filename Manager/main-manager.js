@@ -49,20 +49,14 @@ class MainManager {
         }
         return uid
     }
+
+    async createMonitorUrl(owner, url) {
+        await this.dbManager.createMonitorUrl(owner, url)
+    }
+
+    async deleteMonitorUrl(owner, url) {
+        await this.dbManager.deleteMonitorUrl(owner, url)
+    }
 }
 
-console.log("Just a test")
-test()
-
-async function test() {
-    const mainManager = new MainManager()
-    await mainManager.initialization()
-
-    const email = "hongyan@zephyrhuang.com"
-    const password = "123456"
-    // await mainManager.createAccount(email, password)
-    const uid = await mainManager.loginAccount(email, password)
-    console.log(`Login successfully with uid: ${uid}`)
-
-    await mainManager.destroy()
-}
+export { MainManager }
