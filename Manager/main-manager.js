@@ -14,6 +14,7 @@ import path from 'path'
 import { MongoDBManager } from "../MongoModule/db-manager.js"
 import { FirebaseManager } from "../FirebaseModule/fb-manager.js"
 import { Utility } from "../Utility/utility.js"
+import { SingleUserManager } from '../SingleUserManager/single-user-manager.js'
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -24,6 +25,7 @@ class MainManager {
         this.sensitiveData = Utility.loadSensitiveData(sensitiveFilePath)
         this.dbManager = new MongoDBManager(this.sensitiveData.mongoDBUrl)
         this.firebaseManager = new FirebaseManager()
+        this.users = {}
     }
 
     async initialization() {
@@ -56,6 +58,13 @@ class MainManager {
 
     async deleteMonitorUrl(owner, url) {
         await this.dbManager.deleteMonitorUrl(owner, url)
+    }
+
+    startMonitor(uid, period = '* */1 * * *') {
+        if (!this.users[uid]) {
+            this.users[uid] = new SingleUserManager(this.dbManager, uid)
+        }
+        this.users[uid].startMonitor(period)
     }
 }
 
