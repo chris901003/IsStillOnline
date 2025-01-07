@@ -33,6 +33,15 @@ class DBMonitorUrl {
             throw new Error(`Unable to delete monitor url: ${error.message}`)
         }
     }
+
+    async getMonitorUrls(owner) {
+        try {
+            const urls = await this.MonitorUrlModel.find({ 'owner': owner })
+            return urls.map(url => url.url)
+        } catch (error) {
+            throw new Error(`Unable to get monitor urls: ${error.message}`)
+        }
+    }
 }
 
 DBMonitorUrl.prototype.MonitorUrlSchema = new Schema({

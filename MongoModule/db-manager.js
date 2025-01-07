@@ -59,6 +59,14 @@ class MongoDBManager {
             console.error(`${error.message}`)
         }
     }
+
+    async getMonitorUrls(owner) {
+        try {
+            return await this.monitorUrlManager.getMonitorUrls(owner)
+        } catch (error) {
+            console.error(`${error.message}`)
+        }
+    }
 }
 
 export { MongoDBManager }
