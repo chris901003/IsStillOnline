@@ -31,6 +31,10 @@ class OnlineCheckerResultData {
             this.status = 'Unknown'
         }
     }
+
+    toString() {
+        return `[${this.status}] - ${this.url} - ${this.statusCode}`
+    }
 }
 
 class OnlineChecker {
