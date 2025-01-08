@@ -11,6 +11,8 @@
 import express from 'express'
 import Joi from 'joi'
 
+import { successResponse, failedResponse } from './common-response.js'
+
 const urlRouter = express.Router()
 
 const urlSchema = Joi.object({
@@ -21,11 +23,7 @@ const urlSchema = Joi.object({
 function validateUrlData(req, res, next) {
     const { error, _ } = urlSchema.validate(req.body)
     if (error) {
-        res.status(400).json({
-            'success': false,
-            'message': error.message,
-            'data': {}
-        })
+        res.status(400).json(failedResponse(error.message))
         return
     }
     next()
@@ -36,28 +34,14 @@ export const UrlRouter = (mainManager) => {
         const data = req.body
         await mainManager.createMonitorUrl(data.owner, data.url)
 
-        res.status(200).json({
-            'success': true,
-            'message': 'Monitor url created',
-            'data': {
-                'owner': data.owner,
-                'url': data.url
-            }
-        })
+        res.status(200).json(successResponse({ 'owner': data.owner, 'url': data.url }))
     })
 
     urlRouter.post('/delete', validateUrlData, async (req, res) => {
         const data = req.body
         await mainManager.deleteMonitorUrl(data.owner, data.url)
 
-        res.status(200).json({
-            'success': true,
-            'message': 'Monitor url deleted',
-            'data': {
-                'owner': data.owner,
-                'url': data.url
-            }
-        })
+        res.status(200).json(successResponse({ 'owner': data.owner, 'url': data.url }))
     })
 
     urlRouter.get('/get', async (req, res) => {
@@ -65,24 +49,13 @@ export const UrlRouter = (mainManager) => {
         console.log(owner)
 
         if (!owner) {
-            res.status(400).json({
-                'success': false,
-                'message': 'Missing owner',
-                'data': {}
-            })
+            res.status(400).json(failedResponse('Missing owner'))
             return
         }
 
         const urls = await mainManager.getMonitorUrls(owner)
 
-        res.status(200).json({
-            'success': true,
-            'message': 'Monitor urls',
-            'data': {
-                'owner': owner,
-                'urls': urls
-            }
-        })
+        res.status(200).json(successResponse({ 'owner': owner, 'urls': urls }))
     })
 
     return urlRouter

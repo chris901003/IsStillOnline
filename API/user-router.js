@@ -11,6 +11,8 @@
 import express from 'express'
 import Joi from 'joi'
 
+import { successResponse, failedResponse } from './common-response.js'
+
 const userRouter = express.Router()
 
 const userSchema = Joi.object({
@@ -22,11 +24,7 @@ export const UserRouter = (mainManager) => {
     userRouter.use((req, res, next) => {
         const { error, _ } = userSchema.validate(req.body)
         if (error) {
-            res.status(400).json({
-                'success': false,
-                'message': error.message,
-                'data': {}
-            })
+            res.status(400).json(failedResponse(error.message))
             return
         }
         next()
@@ -34,28 +32,26 @@ export const UserRouter = (mainManager) => {
 
     userRouter.post('/create', async (req, res) => {
         const data = req.body
-        await mainManager.createAccount(data.email, data.password)
+        try {
+            await mainManager.createAccount(data.email, data.password)
+        } catch (error) {
+            res.status(400).json(failedResponse(error.message))
+            return
+        }
 
-        res.status(200).json({
-            'success': true,
-            'message': 'User created',
-            'data': { 'email': data.email }
-        })
+        res.status(200).json(successResponse({ 'email': data.email }))
     })
 
     userRouter.post('/login', async (req, res) => {
         const data = req.body
 
-        const uid = await mainManager.loginAccount(data.email, data.password)
-
-        res.status(200).json({
-            'success': true,
-            'message': 'User login',
-            'data': {
-                'email': data.email,
-                'uid': uid
-            }
-        })
+        try {
+            const uid = await mainManager.loginAccount(data.email, data.password)
+            res.status(200).json(successResponse({ 'email': data.email, 'uid': uid }))
+        } catch (error) {
+            res.status(400).json(failedResponse(error.message))
+            return
+        }
     })
 
     return userRouter

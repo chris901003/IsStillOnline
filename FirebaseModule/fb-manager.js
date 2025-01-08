@@ -31,7 +31,7 @@ class FirebaseManager {
             const response = await this.authManager.createUser(email, password)
             return response.user.uid
         } catch (error) {
-            console.error(`${error.message}`)
+            throw new Error(`Failed to create user: ${error.message}`)
         }
     }
 
@@ -40,7 +40,7 @@ class FirebaseManager {
             const response = await this.authManager.loginUser(email, password)
             return response.user.uid
         } catch (error) {
-            console.error(`${error.message}`)
+            throw new Error(`Failed to login user: ${error.message}`)
         }
     }
 }

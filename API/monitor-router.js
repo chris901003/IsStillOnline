@@ -11,6 +11,8 @@
 import express from 'express'
 import Joi from 'joi'
 
+import { successResponse, failedResponse } from './common-response.js'
+
 const monitorRouter = express.Router()
 
 const monitorSchema = Joi.object({
@@ -20,11 +22,7 @@ const monitorSchema = Joi.object({
 monitorRouter.use((req, res, next) => {
     const { error, _ } = monitorSchema.validate(req.body)
     if (error) {
-        res.status(400).json({
-            'success': false,
-            'message': error.message,
-            'data': {}
-        })
+        res.status(400).json(failedResponse(error.message))
         return
     }
     next()
@@ -35,26 +33,14 @@ export const MonitorRouter = (mainManager) => {
         const data = req.body
         mainManager.startMonitor(data.owner)
 
-        res.status(200).json({
-            'success': true,
-            'message': 'Monitor started',
-            'data': {
-                'owner': data.owner
-            }
-        })
+        res.status(200).successResponse({ 'owner': data.owner })
     })
 
     monitorRouter.post('/stop', (req, res) => {
         const data = req.body
         mainManager.stopMonitor(data.owner)
 
-        res.status(200).json({
-            'success': true,
-            'message': 'Monitor stopped',
-            'data': {
-                'owner': data.owner
-            }
-        })
+        res.status(200).successResponse({ 'owner': data.owner })
     })
 
     return monitorRouter
