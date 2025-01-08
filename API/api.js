@@ -9,7 +9,6 @@
 */
 
 import express from 'express'
-import { MainManager } from '../Manager/main-manager.js'
 import { UserRouter } from './user-router.js'
 import { UrlRouter } from './url-router.js'
 import { MonitorRouter } from './monitor-router.js'
@@ -43,11 +42,3 @@ class APIManager {
 }
 
 export { APIManager }
-
-test()
-
-async function test() {
-    const mainManager = new MainManager()
-    await mainManager.initialization()
-    const apiManager = new APIManager(mainManager)
-}

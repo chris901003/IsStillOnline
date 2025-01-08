@@ -37,7 +37,7 @@ class SingleUserManager {
         this.emailManager.sendReport(reports)
     }
 
-    startMonitor(period = '* */1 * * *') {
+    startMonitor(period = '0 */1 * * *') {
         if (this.job) {
             console.log('Cancel the previous job')
             this.job.cancel()

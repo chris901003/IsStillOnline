@@ -36,7 +36,7 @@ export const MonitorRouter = (mainManager) => {
         mainManager.startMonitor(data.owner)
 
         logger.info(`[Monitor-Router]-[Success] User: ${data.owner}, Start monitor`)
-        res.status(200).successResponse({ 'owner': data.owner })
+        res.status(200).json(successResponse({ 'owner': data.owner }))
     })
 
     monitorRouter.post('/stop', (req, res) => {
@@ -44,7 +44,7 @@ export const MonitorRouter = (mainManager) => {
         mainManager.stopMonitor(data.owner)
 
         logger.info(`[Monitor-Router]-[Success] User: ${data.owner}, Stop monitor`)
-        res.status(200).successResponse({ 'owner': data.owner })
+        res.status(200).json(successResponse({ 'owner': data.owner }))
     })
 
     return monitorRouter
