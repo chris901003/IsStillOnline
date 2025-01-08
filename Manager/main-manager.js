@@ -60,11 +60,21 @@ class MainManager {
         await this.dbManager.deleteMonitorUrl(owner, url)
     }
 
+    async getMonitorUrls(owner) {
+        return await this.dbManager.getMonitorUrls(owner)
+    }
+
     startMonitor(uid, period = '* */1 * * *') {
         if (!this.users[uid]) {
             this.users[uid] = new SingleUserManager(this.dbManager, uid)
         }
         this.users[uid].startMonitor(period)
+    }
+
+    stopMonitor(uid) {
+        if (this.users[uid]) {
+            this.users[uid].job.cancel()
+        }
     }
 }
 
