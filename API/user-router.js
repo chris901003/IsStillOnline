@@ -9,23 +9,31 @@
 */
 
 import express from 'express'
+import Joi from 'joi'
 
 const userRouter = express.Router()
 
-export const UserRouter = (mainManager) => {
-    userRouter.post('/create', async (req, res) => {
-        const data = req.body
-        console.log(data)
+const userSchema = Joi.object({
+    email: Joi.string().email().required(),
+    password: Joi.string().required()
+})
 
-        if (!data.email || !data.password) {
+export const UserRouter = (mainManager) => {
+    userRouter.use((req, res, next) => {
+        const { error, _ } = userSchema.validate(req.body)
+        if (error) {
             res.status(400).json({
                 'success': false,
-                'message': 'Missing email or password',
+                'message': error.message,
                 'data': {}
             })
             return
         }
+        next()
+    })
 
+    userRouter.post('/create', async (req, res) => {
+        const data = req.body
         await mainManager.createAccount(data.email, data.password)
 
         res.status(200).json({
@@ -37,16 +45,6 @@ export const UserRouter = (mainManager) => {
 
     userRouter.post('/login', async (req, res) => {
         const data = req.body
-        console.log(data)
-
-        if (!data.email || !data.password) {
-            res.status(400).json({
-                'success': false,
-                'message': 'Missing email or password',
-                'data': {}
-            })
-            return
-        }
 
         const uid = await mainManager.loginAccount(data.email, data.password)
 

@@ -9,23 +9,31 @@
 */
 
 import express from 'express'
+import Joi from 'joi'
 
 const urlRouter = express.Router()
 
+const urlSchema = Joi.object({
+    owner: Joi.string().required(),
+    url: Joi.string().required()
+})
+
+function validateUrlData(req, res, next) {
+    const { error, _ } = urlSchema.validate(req.body)
+    if (error) {
+        res.status(400).json({
+            'success': false,
+            'message': error.message,
+            'data': {}
+        })
+        return
+    }
+    next()
+}
+
 export const UrlRouter = (mainManager) => {
-    urlRouter.post('/create', async (req, res) => {
+    urlRouter.post('/create', validateUrlData, async (req, res) => {
         const data = req.body
-        console.log(data)
-
-        if (!data.owner || !data.url) {
-            res.status(400).json({
-                'success': false,
-                'message': 'Missing owner or url',
-                'data': {}
-            })
-            return
-        }
-
         await mainManager.createMonitorUrl(data.owner, data.url)
 
         res.status(200).json({
@@ -38,19 +46,8 @@ export const UrlRouter = (mainManager) => {
         })
     })
 
-    urlRouter.post('/delete', async (req, res) => {
+    urlRouter.post('/delete', validateUrlData, async (req, res) => {
         const data = req.body
-        console.log(data)
-
-        if (!data.owner || !data.url) {
-            res.status(400).json({
-                'success': false,
-                'message': 'Missing owner or url',
-                'data': {}
-            })
-            return
-        }
-
         await mainManager.deleteMonitorUrl(data.owner, data.url)
 
         res.status(200).json({
