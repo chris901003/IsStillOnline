@@ -3,3 +3,4 @@ target-urls.txt
 sensitive.json
 mongodb
 .env
+logs

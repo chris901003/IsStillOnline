@@ -11,6 +11,7 @@
 import express from 'express'
 import Joi from 'joi'
 
+import { logger } from '../Logger/logger.js'
 import { successResponse, failedResponse } from './common-response.js'
 
 const userRouter = express.Router()
@@ -24,6 +25,7 @@ export const UserRouter = (mainManager) => {
     userRouter.use((req, res, next) => {
         const { error, _ } = userSchema.validate(req.body)
         if (error) {
+            logger.info(`[User-Router]-[Params Error] ${error.message}`)
             res.status(400).json(failedResponse(error.message))
             return
         }
@@ -34,8 +36,10 @@ export const UserRouter = (mainManager) => {
         const data = req.body
         try {
             await mainManager.createAccount(data.email, data.password)
+            logger.info(`[User-Router]-[Success] User create: ${data.email}`)
         } catch (error) {
             res.status(400).json(failedResponse(error.message))
+            logger.info(`[User-Router]-[Failed] User create: ${data.email}`)
             return
         }
 
@@ -47,9 +51,11 @@ export const UserRouter = (mainManager) => {
 
         try {
             const uid = await mainManager.loginAccount(data.email, data.password)
+            logger.info(`[User-Router]-[Success] User login: ${data.email}`)
             res.status(200).json(successResponse({ 'email': data.email, 'uid': uid }))
         } catch (error) {
             res.status(400).json(failedResponse(error.message))
+            logger.info(`[User-Router]-[Failed] User login: ${data.email}`)
             return
         }
     })

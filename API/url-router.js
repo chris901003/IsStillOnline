@@ -11,6 +11,7 @@
 import express from 'express'
 import Joi from 'joi'
 
+import { logger } from '../Logger/logger.js'
 import { successResponse, failedResponse } from './common-response.js'
 
 const urlRouter = express.Router()
@@ -23,6 +24,7 @@ const urlSchema = Joi.object({
 function validateUrlData(req, res, next) {
     const { error, _ } = urlSchema.validate(req.body)
     if (error) {
+        logger.info(`[Url-Router]-[Params Error] ${error.message}`)
         res.status(400).json(failedResponse(error.message))
         return
     }
@@ -34,6 +36,7 @@ export const UrlRouter = (mainManager) => {
         const data = req.body
         await mainManager.createMonitorUrl(data.owner, data.url)
 
+        logger.info(`[Url-Router]-[Success] User: ${data.owner}, Create monitor url: ${data.url}`)
         res.status(200).json(successResponse({ 'owner': data.owner, 'url': data.url }))
     })
 
@@ -41,6 +44,7 @@ export const UrlRouter = (mainManager) => {
         const data = req.body
         await mainManager.deleteMonitorUrl(data.owner, data.url)
 
+        logger.info(`[Url-Router]-[Success] User: ${data.owner}, Delete monitor url: ${data.url}`)
         res.status(200).json(successResponse({ 'owner': data.owner, 'url': data.url }))
     })
 
@@ -49,12 +53,14 @@ export const UrlRouter = (mainManager) => {
         console.log(owner)
 
         if (!owner) {
+            logger.info(`[Url-Router]-[Params Error] Missing owner`)
             res.status(400).json(failedResponse('Missing owner'))
             return
         }
 
         const urls = await mainManager.getMonitorUrls(owner)
 
+        logger.info(`[Url-Router]-[Success] User: ${owner}, Get monitor urls`)
         res.status(200).json(successResponse({ 'owner': owner, 'urls': urls }))
     })
 
