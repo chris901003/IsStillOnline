@@ -15,6 +15,7 @@ async function main() {
     const mainManager = new MainManager()
     await mainManager.initialization()
     const apiManager = new APIManager(mainManager)
+    await mainManager.restartMonitor()
 }
 
 main()

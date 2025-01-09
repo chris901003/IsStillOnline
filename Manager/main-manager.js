@@ -15,6 +15,7 @@ import { MongoDBManager } from "../MongoModule/db-manager.js"
 import { FirebaseManager } from "../FirebaseModule/fb-manager.js"
 import { Utility } from "../Utility/utility.js"
 import { SingleUserManager } from '../SingleUserManager/single-user-manager.js'
+import { logger } from '../Logger/logger.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -64,16 +65,30 @@ class MainManager {
         return await this.dbManager.getMonitorUrls(owner)
     }
 
-    startMonitor(uid, period = '0 */1 * * *') {
+    async startMonitor(uid, period = '0 */1 * * *') {
         if (!this.users[uid]) {
             this.users[uid] = new SingleUserManager(this.dbManager, uid)
         }
         this.users[uid].startMonitor(period)
+        await this.dbManager.changeMonitorStatus(uid, true)
     }
 
-    stopMonitor(uid) {
+    async stopMonitor(uid) {
         if (this.users[uid]) {
             this.users[uid].job.cancel()
+        }
+        await this.dbManager.changeMonitorStatus(uid, false)
+    }
+
+    async restartMonitor(period = '0 */1 * * *') {
+        try {
+            const users = await this.dbManager.getStartMonitorUser()
+            for (const user of users) {
+                await this.startMonitor(user.uid, period)
+                logger.info(`[Main-Manager] Restart monitor for user: ${user.email}`)
+            }
+        } catch (error) {
+            logger.error(`[Main-Manager] Fail restart: ${error.message}`)
         }
     }
 }

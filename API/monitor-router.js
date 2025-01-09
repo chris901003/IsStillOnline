@@ -31,17 +31,17 @@ monitorRouter.use((req, res, next) => {
 })
 
 export const MonitorRouter = (mainManager) => {
-    monitorRouter.post('/start', (req, res) => {
+    monitorRouter.post('/start', async (req, res) => {
         const data = req.body
-        mainManager.startMonitor(data.owner)
+        await mainManager.startMonitor(data.owner)
 
         logger.info(`[Monitor-Router]-[Success] User: ${data.owner}, Start monitor`)
         res.status(200).json(successResponse({ 'owner': data.owner }))
     })
 
-    monitorRouter.post('/stop', (req, res) => {
+    monitorRouter.post('/stop', async (req, res) => {
         const data = req.body
-        mainManager.stopMonitor(data.owner)
+        await mainManager.stopMonitor(data.owner)
 
         logger.info(`[Monitor-Router]-[Success] User: ${data.owner}, Stop monitor`)
         res.status(200).json(successResponse({ 'owner': data.owner }))

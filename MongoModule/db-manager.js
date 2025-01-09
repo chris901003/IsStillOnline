@@ -2,6 +2,7 @@ import mongoose from 'mongoose'
 
 import { DBUserInfo } from './db-userinfo.js'
 import { DBMonitorUrl } from './db-monitor-url.js'
+import { logger } from '../Logger/logger.js'
 
 class MongoDBManager {
     constructor(dbUrl) {
@@ -57,6 +58,22 @@ class MongoDBManager {
             await this.monitorUrlManager.deleteMonitorUrl(owner, url)
         } catch (error) {
             console.error(`${error.message}`)
+        }
+    }
+
+    async changeMonitorStatus(uid, status) {
+        try {
+            await this.userInfoManager.changeMonitorStatus(uid, status)
+        } catch (error) {
+            logger.error(`[DB-Manager] ${error.message}`)
+        }
+    }
+
+    async getStartMonitorUser() {
+        try {
+            return await this.userInfoManager.getStartMonitorUser()
+        } catch (error) {
+            logger.error(`[DB-Manager] ${error.message}`)
         }
     }
 

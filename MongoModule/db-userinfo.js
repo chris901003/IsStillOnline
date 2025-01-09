@@ -33,6 +33,25 @@ class DBUserInfo {
             throw new Error(`Unable to delete user info: ${error.message}`)
         }
     }
+
+    async changeMonitorStatus(uid, status) {
+        try {
+            const userInfo = await this.UserInfoModel.findOne({ 'uid': uid })
+            userInfo.isMonitor = status
+            await userInfo.save()
+        } catch (error) {
+            throw new Error(`Unable to change monitor status: ${error.message}`)
+        }
+    }
+
+    async getStartMonitorUser() {
+        try {
+            const users = await this.UserInfoModel.find({ 'isMonitor': true })
+            return users
+        } catch (error) {
+            throw new Error(`Unable to get start monitor user: ${error.message}`)
+        }
+    }
 }
 
 DBUserInfo.prototype.UserInfoSchema = new Schema({
@@ -45,6 +64,10 @@ DBUserInfo.prototype.UserInfoSchema = new Schema({
         type: String,
         required: true,
         unique: true
+    },
+    'isMonitor': {
+        type: Boolean,
+        default: false
     }
 })
 
