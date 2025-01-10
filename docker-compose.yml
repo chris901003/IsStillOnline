@@ -33,7 +33,9 @@ services:
       - mongoDB
   
   server:
-    image: node:22.12.0
+    build:
+      context: .
+      dockerfile: Dockerfile
     container_name: IsStillOnlineServer
     ports:
       - "5000:3000"
@@ -42,6 +44,7 @@ services:
     working_dir: /app
     volumes:
       - .:/app
+      - /app/node_modules
     depends_on:
       - mongoDB
     command: npm start
