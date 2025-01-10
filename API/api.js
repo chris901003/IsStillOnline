@@ -19,10 +19,11 @@ class APIManager {
         this.app = express()
         this.generateAPI()
         this.startServer()
+        this.forTestApi()
     }
 
     startServer() {
-        this.app.listen(3000, () => {
+        this.app.listen(3000, '127.0.0.1', () => {
             console.log('Server is running on port 3000')
         })
     }
@@ -38,6 +39,12 @@ class APIManager {
 
         // For Monitor API
         this.app.use('/monitor', MonitorRouter(this.mainManager))
+    }
+
+    forTestApi() {
+        this.app.get('/test', (req, res) => {
+            res.send('Hello World!')
+        })
     }
 }
 
