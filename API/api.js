@@ -23,7 +23,7 @@ class APIManager {
     }
 
     startServer() {
-        this.app.listen(3000, '127.0.0.1', () => {
+        this.app.listen(3000, '0.0.0.0', () => {
             console.log('Server is running on port 3000')
         })
     }
