@@ -12,6 +12,7 @@ import express from 'express'
 import { UserRouter } from './user-router.js'
 import { UrlRouter } from './url-router.js'
 import { MonitorRouter } from './monitor-router.js'
+import { TokenRouter } from './token-router.js'
 
 class APIManager {
     constructor(mainManager) {
@@ -39,6 +40,9 @@ class APIManager {
 
         // For Monitor API
         this.app.use('/monitor', MonitorRouter(this.mainManager))
+
+        // For Token API
+        this.app.use('/token', TokenRouter(this.mainManager))
     }
 
     forTestApi() {

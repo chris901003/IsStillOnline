@@ -12,7 +12,11 @@ import mongoose from "mongoose"
 import { Schema } from "mongoose"
 import { v4 as uuidv4 } from "uuid"
 
-import { MongoDBManager } from "./db-manager.js"
+const TokenVerifyType = Object.freeze({
+    VALID: 'valid',
+    EXPIRED: 'expired',
+    INVALID: 'invalid'
+})
 
 class DBToken {
     constructor() { }
@@ -49,14 +53,14 @@ class DBToken {
         try {
             const data = await this.TokenModel.findOne({ 'uid': uid })
             if (data.refreshToken !== token) {
-                throw new Error('Invalid refresh token')
+                return TokenVerifyType.INVALID
             }
             if (data.refreshTokenExpireTime < new Date()) {
-                throw new Error('Refresh token expired')
+                return TokenVerifyType.EXPIRED
             }
             return this.createToken(uid)
         } catch (error) {
-            throw new Error(`Unable to refresh token: ${error.message}`)
+            return TokenVerifyType.INVALID
         }
     }
     
@@ -64,13 +68,13 @@ class DBToken {
         try {
             const data = await this.TokenModel.findOne({ 'uid': uid })
             if (data.token !== token) {
-                throw new Error('Invalid token')
+                return TokenVerifyType.INVALID
             } else if (data.tokenExpireTime < new Date()) {
-                throw new Error('Token expired')
+                return TokenVerifyType.EXPIRED
             }
-            return true
+            return TokenVerifyType.VALID
         } catch (error) {
-            throw new Error(`Unable to verify token: ${error.message}`)
+            return TokenVerifyType.INVALID
         }
     }
 }
@@ -89,19 +93,4 @@ DBToken.prototype.TokenSchema = new Schema({
 
 DBToken.prototype.TokenModel = mongoose.model('Token', DBToken.prototype.TokenSchema)
 
-export { DBToken }
-
-test()
-async function test() {
-    const dbManager = new MongoDBManager("mongodb://superuser:supersecurepassword@localhost:27017/IsStillOnlineDB")
-    await dbManager.startConnection()
-    const dbToken = new DBToken()
-    try {
-        const token = await dbToken.createToken('test')
-        console.log(`Verify token: ${token.token}`)
-        const verify = await dbToken.verifyToken('test', token.token)
-        console.log(verify)
-    } catch (error) {
-        console.error(error)
-    }
-}
+export { DBToken, TokenVerifyType }

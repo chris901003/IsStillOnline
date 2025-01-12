@@ -33,7 +33,7 @@ class CryptoUtility {
                 throw new Error('Invalid signature')
             }
 
-            return Buffer.from(base64Payload, 'base64').toString('utf-8')
+            return JSON.parse(Buffer.from(base64Payload, 'base64').toString('utf-8'))
         } catch (error) {
             throw new Error(`Unable to verify token: ${error.message}`)
         }

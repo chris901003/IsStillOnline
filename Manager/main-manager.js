@@ -53,6 +53,22 @@ class MainManager {
         return uid
     }
 
+    async createToken(uid) {
+        return await this.dbManager.createToken(uid)
+    }
+
+    async deleteToken(uid) {
+        return await this.dbManager.deleteToken(uid)
+    }
+
+    async refreshToken(uid, token) {
+        return await this.dbManager.refreshToken(uid, token)
+    }
+
+    async verifyToken(uid, token) {
+        return await this.dbManager.verifyToken(uid, token)
+    }
+
     async createMonitorUrl(owner, url) {
         await this.dbManager.createMonitorUrl(owner, url)
     }

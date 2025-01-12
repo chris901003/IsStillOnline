@@ -2,6 +2,7 @@ import mongoose from 'mongoose'
 
 import { DBUserInfo } from './db-userinfo.js'
 import { DBMonitorUrl } from './db-monitor-url.js'
+import { DBToken } from './db-token.js'
 import { logger } from '../Logger/logger.js'
 
 class MongoDBManager {
@@ -9,6 +10,7 @@ class MongoDBManager {
         this.dbUrl = dbUrl
         this.userInfoManager = new DBUserInfo()
         this.monitorUrlManager = new DBMonitorUrl()
+        this.tokenManager = new DBToken()
     }
 
     async startConnection() {
@@ -43,6 +45,34 @@ class MongoDBManager {
         } catch (error) {
             console.error(`${error.message}`)
         }
+    }
+
+    async createToken(uid) {
+        try {
+            return await this.tokenManager.createToken(uid)
+        } catch (error) {
+            logger.error(`[DB-Manager] ${error.message}`)
+        }
+    }
+
+    async deleteToken(uid) {
+        try {
+            await this.tokenManager.deleteToken(uid)
+        } catch (error) {
+            logger.error(`[DB-Manager] ${error.message}`)
+        }
+    }
+
+    async refreshToken(uid, token) {
+        try {
+            return await this.tokenManager.refreshToken(uid, token)
+        } catch (error) {
+            logger.error(`[DB-Manager] ${error.message}`)
+        }
+    }
+
+    async verifyToken(uid, token) {
+        return await this.tokenManager.verifyToken(uid, token)
     }
 
     async createMonitorUrl(owner, url) {
