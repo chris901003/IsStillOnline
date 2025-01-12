@@ -8,23 +8,17 @@
  * =============================================================================
 */
 
-import { fileURLToPath } from 'url';
-import path from 'path'
+import dotenv from 'dotenv'
 
 import { MongoDBManager } from "../MongoModule/db-manager.js"
 import { FirebaseManager } from "../FirebaseModule/fb-manager.js"
-import { Utility } from "../Utility/utility.js"
 import { SingleUserManager } from '../SingleUserManager/single-user-manager.js'
 import { logger } from '../Logger/logger.js';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const sensitiveFilePath = path.join(__dirname, 'sensitive.json')
-
 class MainManager {
     constructor() {
-        this.sensitiveData = Utility.loadSensitiveData(sensitiveFilePath)
-        this.dbManager = new MongoDBManager(this.sensitiveData.mongoDBUrl)
+        dotenv.config()
+        this.dbManager = new MongoDBManager(process.env.MONGODB_URL)
         this.firebaseManager = new FirebaseManager()
         this.users = {}
     }

@@ -9,16 +9,10 @@
 */
 
 import { initializeApp } from 'firebase/app'
-import { fileURLToPath } from 'url';
-import path from 'path'
-
-import { Utility } from '../Utility/utility.js'
+import dotenv from 'dotenv'
 import { FirebaseAuthManager } from './fb-auth.js'
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const sensitiveFilePath = path.join(__dirname, 'sensitive.json')
-const sensitiveData = Utility.loadSensitiveData(sensitiveFilePath)
+dotenv.config()
 
 class FirebaseManager {
     constructor() {
@@ -45,6 +39,14 @@ class FirebaseManager {
     }
 }
 
-FirebaseManager.prototype.firebaseConfig = sensitiveData.firebaseConfig
+FirebaseManager.prototype.firebaseConfig = {
+    apiKey: process.env.FBC_API_KEY,
+    authDomain: process.env.FBC_AUTH_DOMAIN,
+    projectId: process.env.FBC_PROJECT_ID,
+    storageBucket: process.env.FBC_STORAGE_BUCKET,
+    messagingSenderId: process.env.FBC_MESSAGING_SENDER_ID,
+    appId: process.env.FBC_APP_ID,
+    measurementId: process.env.FBC_MEASUREMENT_ID
+}
 
 export { FirebaseManager }

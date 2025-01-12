@@ -8,19 +8,12 @@
  * =============================================================================
 */
 
-import { fileURLToPath } from 'url';
-import path from 'path'
 import nodemailer from 'nodemailer'
-
-import { Utility } from "../Utility/utility.js";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const sensitiveFilePath = path.join(__dirname, 'sensitive.json')
+import dotenv from 'dotenv'
 
 class EmailManager {
     constructor() {
-        this.sensitiveData = Utility.loadSensitiveData(sensitiveFilePath)
+        dotenv.config()
     }
 
     async #sendEmail(mailInfo) {
@@ -29,17 +22,17 @@ class EmailManager {
             'port': 587,
             'secure': false,
             'auth': {
-                'user': this.sensitiveData.emailAddress,
-                'pass': this.sensitiveData.emailAppPassword
+                'user': process.env.EMAIL_ADDRESS,
+                'pass': process.env.EMAIL_APP_PASSWORD
             }
         })
     
         const mailOptions = {
             'from': {
                 name: "Service",
-                address: this.sensitiveData.delegateEmail
+                address: process.env.DELEGATE_EMAIL
             },
-            'to': this.sensitiveData.targetEmailAddress,
+            'to': process.env.TARGET_EMAIL_ADDRESS,
             'subject': 'URL Monitor Report',
             'text': mailInfo
         }
