@@ -13,6 +13,7 @@ import { UserRouter } from './user-router.js'
 import { UrlRouter } from './url-router.js'
 import { MonitorRouter } from './monitor-router.js'
 import { TokenRouter } from './token-router.js'
+import { authVerify } from './auth-verify.js'
 
 class APIManager {
     constructor(mainManager) {
@@ -31,6 +32,7 @@ class APIManager {
 
     generateAPI() {
         this.app.use(express.json())
+        authVerify(this.app, this.mainManager)
 
         // For user API
         this.app.use('/user', UserRouter(this.mainManager))

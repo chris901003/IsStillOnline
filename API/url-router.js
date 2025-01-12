@@ -50,7 +50,6 @@ export const UrlRouter = (mainManager) => {
 
     urlRouter.get('/get', async (req, res) => {
         const owner = req.query.owner
-        console.log(owner)
 
         if (!owner) {
             logger.info(`[Url-Router]-[Params Error] Missing owner`)
