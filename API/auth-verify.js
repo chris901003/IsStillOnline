@@ -41,7 +41,11 @@ async function verifyToken(mainManager, req, res, next) {
     try {
         const decodedToken = cryptoUtility.verifyToken(token)
         const checkResult = await mainManager.verifyToken(decodedToken.uid, decodedToken.token)
-        if (checkResult === TokenVerifyType.VALID ) {
+        if (checkResult === TokenVerifyType.EXPIRED && req.path === '/token/refresh') {
+            req.uid = decodedToken.uid
+            req.token = token
+            next()
+        } else if (checkResult === TokenVerifyType.VALID) {
             req.uid = decodedToken.uid
             req.token = token
             next()

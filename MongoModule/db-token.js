@@ -31,7 +31,7 @@ class DBToken {
         }
         try {
             const result = await this.TokenModel.findOneAndUpdate(
-                { uid }, 
+                { 'uid': uid }, 
                 { $set: token }, 
                 { upsert: true, new: true }
             )
