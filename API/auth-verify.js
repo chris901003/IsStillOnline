@@ -42,6 +42,8 @@ async function verifyToken(mainManager, req, res, next) {
         const decodedToken = cryptoUtility.verifyToken(token)
         const checkResult = await mainManager.verifyToken(decodedToken.uid, decodedToken.token)
         if (checkResult === TokenVerifyType.VALID ) {
+            req.uid = decodedToken.uid
+            req.token = token
             next()
         } else {
             res.status(401).json(failedResponse('Unauthorized'))
