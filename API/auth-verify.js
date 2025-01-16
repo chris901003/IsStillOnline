@@ -14,16 +14,17 @@ import { failedResponse } from "./common-response.js"
 
 const cryptoUtility = new CryptoUtility()
 
-const whilelist = [
+const whitelist = [
     '/user/login',
     '/user/create',
-    '/token/create'
+    '/token/create',
+    '/test'
 ]
 
 export const authVerify = (app, mainManager) => {
     app.use((req, res, next) => {
         const path = req.path
-        if (whilelist.includes(path)) {
+        if (whitelist.includes(path)) {
             next()
             return
         }
