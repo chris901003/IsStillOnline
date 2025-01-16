@@ -53,6 +53,26 @@ export const TokenRouter = (mainManager) => {
         res.status(200).json(successResponse({ 'token': signToken }))
     })
 
+    tokenRouter.get('/verify', async (req, res) => {
+        let token = req.token
+        try {
+            token = cryptoUtility.verifyToken(token)
+        } catch {
+            logger.info(`[Token-Router]-[Failed] User: ${uid}, Token: Invalid`)
+            res.status(401).json(failedResponse('Unauthorized token'))
+            return
+        }
+        let uid = token.uid
+        const result = await mainManager.verifyToken(uid, token.token)
+        if (result === TokenVerifyType.INVALID || result === TokenVerifyType.EXPIRED) {
+            logger.info(`[Token-Router]-[Failed] User: ${uid}, Token: ${result}`)
+            res.status(401).json(failedResponse(result))
+            return
+        }
+        logger.info(`[Token-Router]-[Success] User: ${uid}, Token: ${result}`)
+        res.status(200).json(successResponse({ 'token': token }))
+    })
+
     tokenRouter.get('/delete', async (req, res) => {
         const uid = req.uid
         await mainManager.deleteToken(uid)
