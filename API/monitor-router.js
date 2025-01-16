@@ -32,5 +32,13 @@ export const MonitorRouter = (mainManager) => {
         res.status(200).json(successResponse({ 'owner': uid }))
     })
 
+    monitorRouter.get('/status', async (req, res) => {
+        const uid = req.uid
+        const userInfo = await mainManager.getUserInfo(uid)
+
+        logger.info(`[Monitor-Router]-[Success] User: ${uid}, Get monitor status: ${userInfo.isMonitor}`)
+        res.status(200).json(successResponse({ 'uid': uid, 'status': userInfo.isMonitor }))
+    })
+
     return monitorRouter
 }

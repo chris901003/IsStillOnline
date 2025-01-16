@@ -34,6 +34,15 @@ class DBUserInfo {
         }
     }
 
+    async getUserInfo(uid) {
+        try {
+            const userInfo = await this.UserInfoModel.findOne({ 'uid': uid })
+            return userInfo
+        } catch (error) {
+            throw new Error(`Unable to get user info: ${error.message}`)
+        }
+    }
+
     async changeMonitorStatus(uid, status) {
         try {
             const userInfo = await this.UserInfoModel.findOne({ 'uid': uid })

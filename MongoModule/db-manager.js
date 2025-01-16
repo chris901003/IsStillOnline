@@ -91,6 +91,14 @@ class MongoDBManager {
         }
     }
 
+    async getUserInfo(uid) {
+        try {
+            return await this.userInfoManager.getUserInfo(uid)
+        } catch (error) {
+            console.error(`${error.message}`)
+        }
+    }
+
     async changeMonitorStatus(uid, status) {
         try {
             await this.userInfoManager.changeMonitorStatus(uid, status)

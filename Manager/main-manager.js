@@ -75,6 +75,10 @@ class MainManager {
         return await this.dbManager.getMonitorUrls(owner)
     }
 
+    async getUserInfo(uid) {
+        return await this.dbManager.getUserInfo(uid)
+    }
+
     async startMonitor(uid, period = '0 */1 * * *') {
         if (!this.users[uid]) {
             this.users[uid] = new SingleUserManager(this.dbManager, uid)
