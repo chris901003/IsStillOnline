@@ -21,6 +21,11 @@ const cryptoUtility = new CryptoUtility()
 export const TokenRouter = (mainManager) => {
     tokenRouter.get('/create', async (req, res) => {
         const uid = req.query.uid
+        if (uid === undefined) {
+            logger.error(`[Token-Router]-[Failed] Failed to create token: No uid`)
+            res.status(400).json(failedResponse('No uid'))
+            return
+        }
         const result = await mainManager.createToken(uid)
         if (!result) {
             logger.error(`[Token-Router]-[Failed] Failed to create token`)
