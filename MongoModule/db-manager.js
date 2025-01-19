@@ -115,6 +115,14 @@ class MongoDBManager {
         }
     }
 
+    async updateFBToken(uid, fbToken) {
+        try {
+            await this.userInfoManager.updateFBToken(uid, fbToken)
+        } catch (error) {
+            logger.error(`[DB-Manager] ${error.message}`)
+        }
+    }
+
     async getMonitorUrls(owner) {
         try {
             return await this.monitorUrlManager.getMonitorUrls(owner)

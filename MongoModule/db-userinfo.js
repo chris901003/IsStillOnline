@@ -61,6 +61,16 @@ class DBUserInfo {
             throw new Error(`Unable to get start monitor user: ${error.message}`)
         }
     }
+
+    async updateFBToken(uid, fbToken) {
+        try {
+            const userInfo = await this.UserInfoModel.findOne({ 'uid': uid })
+            userInfo.fbToken = fbToken
+            await userInfo.save()
+        } catch (error) {
+            throw new Error(`Unable to update fb token: ${error.message}`)
+        }
+    }
 }
 
 DBUserInfo.prototype.UserInfoSchema = new Schema({
@@ -77,6 +87,10 @@ DBUserInfo.prototype.UserInfoSchema = new Schema({
     'isMonitor': {
         type: Boolean,
         default: false
+    },
+    'fbToken': {
+        type: String,
+        default: ''
     }
 })
 

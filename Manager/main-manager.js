@@ -94,6 +94,10 @@ class MainManager {
         await this.dbManager.changeMonitorStatus(uid, false)
     }
 
+    async updateFBToken(uid, fbToken) {
+        await this.dbManager.updateFBToken(uid, fbToken)
+    }
+
     async restartMonitor(period = '0 */1 * * *') {
         try {
             const users = await this.dbManager.getStartMonitorUser()
