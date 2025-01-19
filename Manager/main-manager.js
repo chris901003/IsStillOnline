@@ -80,8 +80,9 @@ class MainManager {
     }
 
     async startMonitor(uid, period = '0 */1 * * *') {
+        const userInfo = await this.dbManager.getUserInfo(uid)
         if (!this.users[uid]) {
-            this.users[uid] = new SingleUserManager(this.dbManager, uid)
+            this.users[uid] = new SingleUserManager(this.dbManager, uid, userInfo.fbToken)
         }
         this.users[uid].startMonitor(period)
         await this.dbManager.changeMonitorStatus(uid, true)
@@ -96,6 +97,9 @@ class MainManager {
 
     async updateFBToken(uid, fbToken) {
         await this.dbManager.updateFBToken(uid, fbToken)
+        if (this.users[uid]) {
+            this.users[uid].fbToken = fbToken
+        }
     }
 
     async restartMonitor(period = '0 */1 * * *') {

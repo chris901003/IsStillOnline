@@ -11,12 +11,15 @@
 import schedule from 'node-schedule'
 import { OnlineChecker } from '../Core/online-checker.js'
 import { EmailManager } from '../EmailModule/email-manager.js'
+import { NotificationManager } from '../NotificationModule/notification-manager.js'
 
 class SingleUserManager {
-    constructor(dbManager, uid) {
+    constructor(dbManager, uid, fbToken) {
         this.uid = uid
+        this.fbToken = fbToken
         this.dbManager = dbManager
         this.emailManager = new EmailManager()
+        this.notificationManager = new NotificationManager()
         this.#start()
 
         this.onlineChecker = null
@@ -34,7 +37,11 @@ class SingleUserManager {
 
     async #checkUrls() {
         const reports = await this.onlineChecker.check()
-        this.emailManager.sendReport(reports)
+        // this.emailManager.sendReport(reports)
+        console.log(`User ${this.uid} reports: ${reports}, fbToken: ${this.fbToken}`)
+        if (this.fbToken.length > 0) {
+            this.notificationManager.sendReport(this.fbToken, reports)
+        }
     }
 
     startMonitor(period = '0 */1 * * *') {
@@ -42,6 +49,7 @@ class SingleUserManager {
             console.log('Cancel the previous job')
             this.job.cancel()
         }
+        period = '1 * * * * *'
         this.job = schedule.scheduleJob(period, () => this.#checkUrls())
     }
 }

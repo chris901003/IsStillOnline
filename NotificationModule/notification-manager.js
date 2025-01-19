@@ -35,6 +35,22 @@ class NotificationManager {
         })
     }
 
+    async sendReport(token, reports) {
+        // report = [OnlineCheckerResultData]
+        let title = 'Monitor Report'
+        let body = ''
+        for (const report of reports) {
+            if (report.statusCode !== 200) {
+                body += `${report.toString()}\n`
+            }
+        }
+        if (body === '') {
+            body = 'All urls are online\n'
+        }
+        body += `Time: ${new Date().toLocaleString()}`
+        await this.sendNotification(token, title, body)
+    }
+
     async sendNotification(token, title, body) {
         const message = {
             token: token,
@@ -50,8 +66,12 @@ class NotificationManager {
                 },
             },
         };
-        let response = await this.admin.messaging().send(message)
-        console.log('Successfully sent message:', response)
+        try {
+            let response = await this.admin.messaging().send(message)
+            console.log('Successfully sent message:', response)
+        } catch (error) {
+            console.error('Error sending message:', error)
+        }
     }
 }
 
