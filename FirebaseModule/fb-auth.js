@@ -9,25 +9,21 @@
 */
 
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword  } from 'firebase/auth'
+import { admin } from './fb-admin.js'
 
 class FirebaseAuthManager {
     constructor() {
         this.auth = getAuth()
     }
 
-    async createUser(email, password) {
+    async verifyUser(email, uid) {
         try {
-            return await createUserWithEmailAndPassword(this.auth, email, password)
+            const userRecord = await admin.auth().getUser(uid)
+            if (userRecord.email !== email) {
+                throw new Error(`Email and uid not match`)
+            }
         } catch (error) {
-            throw new Error(`Unable to create user: ${error.message}`)
-        }
-    }
-
-    async loginUser(email, password) {
-        try {
-            return await signInWithEmailAndPassword(this.auth, email, password)
-        } catch (error) {
-            throw new Error(`Unable to login user: ${error.message}`)
+            throw new Error(`Uid is not found: ${error.message}`)
         }
     }
 }

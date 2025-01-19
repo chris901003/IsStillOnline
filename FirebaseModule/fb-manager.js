@@ -20,22 +20,8 @@ class FirebaseManager {
         this.authManager = new FirebaseAuthManager()
     }
 
-    async createUser(email, password) {
-        try {
-            const response = await this.authManager.createUser(email, password)
-            return response.user.uid
-        } catch (error) {
-            throw new Error(`Failed to create user: ${error.message}`)
-        }
-    }
-
-    async loginUser(email, password) {
-        try {
-            const response = await this.authManager.loginUser(email, password)
-            return response.user.uid
-        } catch (error) {
-            throw new Error(`Failed to login user: ${error.message}`)
-        }
+    async verifyUser(email, uid) {
+        return await this.authManager.verifyUser(email, uid)
     }
 }
 

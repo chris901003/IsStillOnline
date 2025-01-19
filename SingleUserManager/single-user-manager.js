@@ -49,6 +49,7 @@ class SingleUserManager {
             console.log('Cancel the previous job')
             this.job.cancel()
         }
+        period = '1 * * * * *'
         this.job = schedule.scheduleJob(period, () => this.#checkUrls())
     }
 }

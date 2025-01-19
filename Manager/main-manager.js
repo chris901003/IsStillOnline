@@ -31,18 +31,11 @@ class MainManager {
         await this.dbManager.destory()
     }
 
-    async createAccount(email, password) {
-        const uid = await this.firebaseManager.createUser(email, password)
-        if (!uid) {
-            throw new Error(`Unable to create user with email: ${email}`)
-        }
-        await this.dbManager.createUserInfo(email, uid)
-    }
-
-    async loginAccount(email, password) {
-        const uid = await this.firebaseManager.loginUser(email, password)
-        if (!uid) {
-            throw new Error(`Unable to login user with email: ${email}`)
+    async loginAccount(email, uid) {
+        await this.firebaseManager.verifyUser(email, uid)
+        const userInfo = await this.dbManager.getUserInfo(uid)
+        if (!userInfo) {
+            await this.dbManager.createUserInfo(email, uid)
         }
         return uid
     }

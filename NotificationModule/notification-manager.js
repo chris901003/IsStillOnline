@@ -8,8 +8,7 @@
  * =============================================================================
 */
 
-import admin from 'firebase-admin'
-import dotenv from 'dotenv'
+import { admin } from '../FirebaseModule/fb-admin.js'
 
 
 class NotificationManager {
@@ -47,32 +46,12 @@ class NotificationManager {
             },
         };
         try {
-            let response = await this.admin.messaging().send(message)
+            let response = await admin.messaging().send(message)
             console.log('Successfully sent message:', response)
         } catch (error) {
             console.error('Error sending message:', error)
         }
     }
 }
-
-dotenv.config()
-
-NotificationManager.prototype.serviceAccount = {
-    type: process.env.FBA_type,
-    project_id: process.env.FBA_project_id,
-    private_key_id: process.env.FBA_private_key_id,
-    private_key: process.env.FBA_private_key.replace(/\\n/g, '\n'),
-    client_email: process.env.FBA_client_email,
-    client_id: process.env.FBA_client_id,
-    auth_uri: process.env.FBA_auth_uri,
-    token_uri: process.env.FBA_token_uri,
-    auth_provider_x509_cert_url: process.env.FBA_auth_provider_x509_cert_url,
-    client_x509_cert_url: process.env.FBA_client_x509_cert_url,
-    universal_domain: process.env.FBA_universe_domain
-}
-
-NotificationManager.prototype.admin = admin.initializeApp({
-    credential: admin.credential.cert(NotificationManager.prototype.serviceAccount)
-})
 
 export { NotificationManager }
