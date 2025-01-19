@@ -4,3 +4,4 @@ sensitive.json
 mongodb
 .env
 logs
+ServiceAccountKey.json
