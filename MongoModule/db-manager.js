@@ -39,9 +39,9 @@ class MongoDBManager {
         }
     }
 
-    async deleteUserInfo(email) {
+    async deleteUserInfo(uid) {
         try {
-            await this.userInfoManager.deleteUserInfo(email)
+            await this.userInfoManager.deleteUserInfo(uid)
         } catch (error) {
             console.error(`${error.message}`)
         }
@@ -86,6 +86,14 @@ class MongoDBManager {
     async deleteMonitorUrl(owner, url) {
         try {
             await this.monitorUrlManager.deleteMonitorUrl(owner, url)
+        } catch (error) {
+            console.error(`${error.message}`)
+        }
+    }
+
+    async deleteAllMonitorUrls(owner) {
+        try {
+            await this.monitorUrlManager.deleteAllMonitorUrls(owner)
         } catch (error) {
             console.error(`${error.message}`)
         }

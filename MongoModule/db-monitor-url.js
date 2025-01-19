@@ -42,6 +42,14 @@ class DBMonitorUrl {
             throw new Error(`Unable to get monitor urls: ${error.message}`)
         }
     }
+
+    async deleteAllMonitorUrls(owner) {
+        try {
+            await this.MonitorUrlModel.deleteMany({ 'owner': owner })
+        } catch (error) {
+            throw new Error(`Unable to delete all monitor urls: ${error.message}`)
+        }
+    }
 }
 
 DBMonitorUrl.prototype.MonitorUrlSchema = new Schema({

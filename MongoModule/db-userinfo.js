@@ -26,9 +26,9 @@ class DBUserInfo {
         }
     }
 
-    async deleteUserInfo(email) {
+    async deleteUserInfo(uid) {
         try {
-            await this.UserInfoModel.deleteOne({ 'email': email })
+            await this.UserInfoModel.deleteOne({ 'uid': uid })
         } catch (error) {
             throw new Error(`Unable to delete user info: ${error.message}`)
         }

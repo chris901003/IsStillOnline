@@ -52,6 +52,21 @@ export const UserRouter = (mainManager) => {
         }
     })
 
+    userRouter.get('/delete', async (req, res) => {
+        const uid = req.uid
+
+        try {
+            await mainManager.deleteAccount(uid)
+            logger.info(`[User-Router]-[Success] User delete: ${uid}`)
+        } catch (error) {
+            res.status(400).json(failedResponse(error.message))
+            logger.info(`[User-Router]-[Failed] User delete: ${uid}`)
+            return
+        }
+
+        res.status(200).json(successResponse({ 'uid': uid }))
+    })
+
     userRouter.post('/updateFBToken', async (req, res) => {
         const data = req.body
         if (data.fbToken === undefined) {

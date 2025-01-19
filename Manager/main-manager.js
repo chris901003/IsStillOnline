@@ -40,6 +40,13 @@ class MainManager {
         return uid
     }
 
+    async deleteAccount(uid) {
+        await this.stopMonitor(uid)
+        await this.dbManager.deleteUserInfo(uid)
+        await this.dbManager.deleteAllMonitorUrls(uid)
+        await this.dbManager.deleteToken(uid)
+    }
+
     async createToken(uid) {
         return await this.dbManager.createToken(uid)
     }
