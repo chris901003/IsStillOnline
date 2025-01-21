@@ -40,5 +40,13 @@ export const MonitorRouter = (mainManager) => {
         res.status(200).json(successResponse({ 'uid': uid, 'status': userInfo.isMonitor }))
     })
 
+    monitorRouter.get('/immediate', async (req, res) => {
+        const uid = req.uid
+        await mainManager.monitorImmediately(uid)
+
+        logger.info(`[Monitor-Router]-[Success] User: ${uid}, Immediate check`)
+        res.status(200).json(successResponse({ 'owner': uid }))
+    })
+
     return monitorRouter
 }

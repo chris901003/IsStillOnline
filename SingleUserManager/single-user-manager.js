@@ -35,7 +35,7 @@ class SingleUserManager {
         this.onlineChecker = new OnlineChecker(this.targetUrls)
     }
 
-    async #checkUrls() {
+    async checkUrls() {
         const reports = await this.onlineChecker.check()
         // this.emailManager.sendReport(reports)
         console.log(`User ${this.uid} reports: ${reports}, fbToken: ${this.fbToken}`)
@@ -49,7 +49,7 @@ class SingleUserManager {
             console.log('Cancel the previous job')
             this.job.cancel()
         }
-        this.job = schedule.scheduleJob(period, () => this.#checkUrls())
+        this.job = schedule.scheduleJob(period, () => this.checkUrls())
     }
 }
 

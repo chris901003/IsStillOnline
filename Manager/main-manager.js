@@ -95,6 +95,12 @@ class MainManager {
         await this.dbManager.changeMonitorStatus(uid, false)
     }
 
+    async monitorImmediately(uid) {
+        if (this.users[uid]) {
+            this.users[uid].checkUrls()
+        }
+    }
+
     async updateFBToken(uid, fbToken) {
         await this.dbManager.updateFBToken(uid, fbToken)
         if (this.users[uid]) {
