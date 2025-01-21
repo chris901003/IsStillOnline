@@ -65,10 +65,16 @@ class MainManager {
 
     async createMonitorUrl(owner, url) {
         await this.dbManager.createMonitorUrl(owner, url)
+        if (this.users[owner]) {
+            this.users[owner].updateUrls()
+        }
     }
 
     async deleteMonitorUrl(owner, url) {
         await this.dbManager.deleteMonitorUrl(owner, url)
+        if (this.users[owner]) {
+            this.users[owner].updateUrls()
+        }
     }
 
     async getMonitorUrls(owner) {
@@ -91,6 +97,7 @@ class MainManager {
     async stopMonitor(uid) {
         if (this.users[uid]) {
             this.users[uid].job.cancel()
+            delete this.users[uid]
         }
         await this.dbManager.changeMonitorStatus(uid, false)
     }
